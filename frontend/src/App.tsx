@@ -12,7 +12,7 @@ export default function App() {
 
   return (
     <main>
-      <h1 className='font-bold text-lg'>FluxoCerto</h1>
+      <h1 className="font-bold text-lg">FluxoCerto</h1>
       {isPending && <p>Verificando backend...</p>}
       {isError && <p>Backend indisponível.</p>}
       {data && <p>Backend: {data.status}</p>}
