@@ -1,75 +1,64 @@
-# React + TypeScript + Vite
+# FluxoCerto — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface web do FluxoCerto, construída com React e TypeScript sobre o Vite.
+Para a visão geral do projeto, veja o [README da raiz](../README.md).
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19 + TypeScript
+- Vite
+- TanStack Query (dados do servidor)
+- React Hook Form + Zod (formulários e validação)
+- React Router
+- Tailwind CSS
+- Vitest + Testing Library (testes)
+- ESLint
 
-## React Compiler
+## Pré-requisitos
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Node.js 22 e npm
+- Backend rodando em `http://localhost:8080` (veja o README da raiz)
 
-## Expanding the ESLint configuration
+## Scripts
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+| Comando           | O que faz                                                    |
+| ----------------- | ------------------------------------------------------------ |
+| `npm install`     | Instala as dependências (no CI usa-se `npm ci`)              |
+| `npm run dev`     | Servidor de desenvolvimento em http://localhost:5173         |
+| `npm run build`   | Checa tipos (`tsc -b`) e gera o build de produção em `dist/` |
+| `npm run preview` | Serve o build de produção localmente                         |
+| `npm run lint`    | Roda o ESLint                                                |
+| `npm test`        | Roda os testes uma vez (Vitest)                              |
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Proxy para o backend
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+No desenvolvimento, o Vite encaminha as requisições abaixo para `http://localhost:8080`
+(veja `vite.config.ts`). Assim o frontend usa caminhos relativos, sem configurar CORS:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- `/api` → API do FluxoCerto
+- `/actuator` → health check do backend
 
-```
+## Testes
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+- Os testes ficam ao lado do código (`*.test.tsx`) e rodam em jsdom.
+- A configuração global está em `src/setupTests.ts` (matchers do `jest-dom`).
+- Chamadas ao backend são simuladas nos testes (`fetch` mockado); nenhum teste precisa do backend no ar.
+- Os testes verificam a interface. Permissões na UI nunca substituem a autorização no backend.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Estrutura
 
 ```
+src/
+  main.tsx        ponto de entrada e providers (React Query)
+  App.tsx         componente raiz
+  App.test.tsx    teste do componente raiz
+  setupTests.ts   configuração dos testes
+  index.css       estilos globais (Tailwind)
+```
+
+## Convenções
+
+- Dados do servidor via TanStack Query; formulários com React Hook Form + Zod.
+- Valores monetários chegam da API como strings decimais. Não faça cálculos financeiros com `number`.
+- Toda tela deve tratar os estados de carregamento, vazio, sucesso e erro.
+- Antes de abrir um PR, rode `npm run lint`, `npm test` e `npm run build`.
